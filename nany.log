@@ -1,0 +1,102 @@
+2025-09-27 18:17:30,325 INFO Modelo YOLO cargado: NiñeraV.pt
+2025-09-27 18:17:43,674 INFO Fuente agregada: Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4 (video_20250927181743672270)
+2025-09-27 18:17:47,526 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:17:59,364 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:00,929 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:01,967 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:03,312 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:06,314 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:08,339 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:09,138 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:09,162 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181809_140758.jpg
+2025-09-27 18:18:09,225 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:09,238 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181809_227817.jpg
+2025-09-27 18:18:09,293 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:09,304 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181809_293977.jpg
+2025-09-27 18:18:09,368 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:09,377 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181809_369463.jpg
+2025-09-27 18:18:09,445 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:09,457 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181809_447097.jpg
+2025-09-27 18:18:09,523 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:09,535 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181809_524523.jpg
+2025-09-27 18:18:09,601 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:09,612 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181809_602304.jpg
+2025-09-27 18:18:14,546 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:14,556 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:14,566 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181814_558395.jpg
+2025-09-27 18:18:15,559 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:15,591 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:15,600 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181815_592738.jpg
+2025-09-27 18:18:20,522 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:21,134 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:25,450 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:25,536 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:25,863 INFO Alertas detectadas: ['NIÑO CERCA DE OLLA/SARTÉN!']
+2025-09-27 18:18:26,392 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:26,799 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:27,060 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:27,415 INFO Alertas detectadas: ['NIÑO CERCA DE OLLA/SARTÉN!']
+2025-09-27 18:18:31,943 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:33,234 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:33,246 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181833_235564.jpg
+2025-09-27 18:18:33,300 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:33,312 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181833_301701.jpg
+2025-09-27 18:18:33,384 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:33,398 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181833_385970.jpg
+2025-09-27 18:18:33,553 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:33,563 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181833_554696.jpg
+2025-09-27 18:18:33,638 INFO Procesa alertas: NIÑO CERCA DE OLLA/SARTÉN! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:33,651 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181833_640976.jpg
+2025-09-27 18:18:33,786 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:33,798 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181833_787939.jpg
+2025-09-27 18:18:34,043 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:34,053 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181834_044800.jpg
+2025-09-27 18:18:34,108 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:34,117 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181834_109829.jpg
+2025-09-27 18:18:34,169 INFO Procesa alertas: NIÑO CERCA DE OLLA/SARTÉN! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:34,180 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181834_171613.jpg
+2025-09-27 18:18:34,239 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:34,248 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181834_241306.jpg
+2025-09-27 18:18:34,745 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:34,781 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:34,792 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181834_782912.jpg
+2025-09-27 18:18:39,502 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:39,540 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:39,550 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181839_541959.jpg
+2025-09-27 18:18:50,013 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:50,036 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:50,045 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181850_037038.jpg
+2025-09-27 18:18:51,473 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:51,518 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:51,528 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181851_519658.jpg
+2025-09-27 18:18:53,049 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:18:53,059 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:53,070 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181853_060675.jpg
+2025-09-27 18:18:54,178 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:54,231 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:54,242 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181854_232250.jpg
+2025-09-27 18:18:56,173 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:18:56,204 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:18:56,214 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181856_205894.jpg
+2025-09-27 18:19:00,103 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:19:00,143 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:19:00,153 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181900_144263.jpg
+2025-09-27 18:19:00,411 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:19:00,434 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:19:00,443 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181900_435651.jpg
+2025-09-27 18:19:06,612 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:19:06,653 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:19:06,663 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181906_654688.jpg
+2025-09-27 18:19:07,642 INFO Alertas detectadas: ['NIÑO CERCA DE CUCHILLO!']
+2025-09-27 18:19:07,656 INFO Procesa alertas: NIÑO CERCA DE CUCHILLO! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:19:07,669 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181907_659057.jpg
+2025-09-27 18:19:12,571 INFO Alertas detectadas: ['NIÑO CERCA DE ESTUFA/COCINA!']
+2025-09-27 18:19:12,604 INFO Procesa alertas: NIÑO CERCA DE ESTUFA/COCINA! (Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4)
+2025-09-27 18:19:12,613 INFO Imagen de alerta guardada: alertas_img\alerta_Video_de_WhatsApp_2025_05_05_a_las_20_47_04_25718499_mp4_20250927_181912_605485.jpg
+2025-09-27 18:19:14,597 INFO Zonas guardadas en C:/Users/samuel/Downloads/entrenamiento_niñeravirtual2-20250508T173907Z-001/zonas/zona1.json
+2025-09-27 18:19:16,442 INFO Hilo de captura terminado: Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4
+2025-09-27 18:19:16,445 INFO Fuente eliminada: Video de WhatsApp 2025-05-05 a las 20.47.04_25718499.mp4
+2025-09-27 18:30:30,376 INFO Modelo YOLO cargado: NiñeraV.pt
+2025-09-27 18:39:06,464 INFO Modelo YOLO cargado: NiñeraV.pt
+2025-09-27 19:02:18,150 INFO Modelo custom cargado: NiñeraV.pt
+2025-09-27 19:02:20,525 INFO Modelo COCO cargado: yolov8s.pt
