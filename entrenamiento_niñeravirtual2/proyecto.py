@@ -2,6 +2,7 @@
 # Niñera Virtual - Código funcional + Arquitectura por Capas
 # Patrones: Adapter, Factory Method, Strategy, Facade, Observer, Mediator
 # Incluye: borrar todas las zonas y borrar una zona por nombre
+# + NUEVO: detección de tijeras (scissors) vía modelo COCO (yolov8s.pt)
 # ============================================================
 
 import cv2
@@ -41,7 +42,7 @@ if sys.platform == "win32":
     pathlib.PosixPath = pathlib.WindowsPath
 
 APP_NAME = "Niñera Virtual"
-APP_VERSION = "3.2 Capas+Patrones (Zonas delete)"
+APP_VERSION = "3.3 Capas+Patrones (Tijeras)"
 
 # ==========================
 # CONFIGURACIÓN / CONSTANTES
@@ -59,7 +60,8 @@ class Config:
         'chair': 'silla',
         'dining table': 'mesa',
         'table': 'mesa',
-        'person': 'nino'
+        'person': 'nino',
+        'scissors': 'tijeras',   # ← NUEVO: mapeo tijeras
     }
 
     # Umbrales
@@ -78,7 +80,8 @@ class Config:
         'table': 0.35, 'mesa': 0.35,
         'stool': 0.35, 'taburete': 0.35,
         'counter': 0.35, 'mostrador': 0.35,
-        'shelf': 0.35, 'estante': 0.35
+        'shelf': 0.35, 'estante': 0.35,
+        'tijeras': 0.35, 'scissors': 0.35,  # ← NUEVO: umbrales tijeras
     }
     HIGH_SURFACE_LABELS = [
         'chair', 'silla', 'bar', 'barra', 'table', 'mesa',
@@ -325,7 +328,8 @@ class RiskAnalysisFacade:
             "CHILD_NEAR_STOVE": ("NIÑO CERCA DE ESTUFA/COCINA!", {'cooker','kitchen','cocina'}),
             "CHILD_NEAR_POT": ("NIÑO CERCA DE OLLA/SARTÉN!", {'pot','pan','olla'}),
             "CHILD_NEAR_OVEN": ("NIÑO CERCA DE HORNO!", {'oven','horno'}),
-            "CHILD_NEAR_RAILING": ("NIÑO CERCA DE BARANDA!", {'handrail','baranda'})
+            "CHILD_NEAR_RAILING": ("NIÑO CERCA DE BARANDA!", {'handrail','baranda'}),
+            "CHILD_NEAR_SCISSORS": ("NIÑO CERCA DE TIJERAS!", {'scissors','tijeras'}),  # ← NUEVO
         }
         if children:
             # proximidad
@@ -504,6 +508,7 @@ class CCTVMonitoringSystem(IRiskObserver):
             'stool': (250,204,21), 'taburete': (250,204,21),
             'counter': (251,146,60), 'mostrador': (251,146,60),
             'shelf': (52,211,153), 'estante': (52,211,153),
+            'tijeras': (255,140,0), 'scissors': (255,140,0),  # ← NUEVO: color tijeras
             'default': (203,213,225)
         }
 
@@ -658,7 +663,8 @@ class CCTVMonitoringSystem(IRiskObserver):
         self.metrics={"total":tk.StringVar(value="0"),"knife":tk.StringVar(value="0"),
                       "stairs":tk.StringVar(value="0"),"stove":tk.StringVar(value="0"),
                       "pot":tk.StringVar(value="0"),"zone":tk.StringVar(value="0"),
-                      "high":tk.StringVar(value="0")}
+                      "high":tk.StringVar(value="0"),"scissors":tk.StringVar(value="0")}  # ← NUEVO
+
         grid=ttk.Frame(mf, style='Card.TFrame'); grid.pack(fill=tk.X)
         self._metric_chip(grid,"🔢 Total",self.metrics["total"],0,0)
         self._metric_chip(grid,"🔪 Cuchillo",self.metrics["knife"],0,1)
@@ -667,6 +673,7 @@ class CCTVMonitoringSystem(IRiskObserver):
         self._metric_chip(grid,"🍲 Olla",self.metrics["pot"],2,0)
         self._metric_chip(grid,"📍 Zonas",self.metrics["zone"],2,1)
         self._metric_chip(grid,"⬆️ Altura",self.metrics["high"],3,0)
+        self._metric_chip(grid,"✂️ Tijeras",self.metrics["scissors"],3,1)  # ← NUEVO
 
         actions=ttk.Frame(parent, style='Card.TFrame'); actions.pack(fill=tk.X, pady=(12,0))
         ttk.Button(actions, text="⬇️  Exportar historial CSV", command=self.export_history_csv).pack(fill=tk.X, pady=4)
@@ -1058,7 +1065,9 @@ class CCTVMonitoringSystem(IRiskObserver):
         self.alert_banner.config(text=text, style='Danger.Alert.TLabel' if danger else 'Alert.TLabel')
 
     def _bump_metrics(self, text):
-        def inc(k): self.metrics[k].set(str(int(self.metrics[k].get())+1)); self.metrics["total"].set(str(int(self.metrics["total"].get())+1))
+        def inc(k):
+            self.metrics[k].set(str(int(self.metrics[k].get())+1))
+            self.metrics["total"].set(str(int(self.metrics["total"].get())+1))
         low=text.lower()
         if "cuchillo" in low: inc("knife")
         if "escalera" in low: inc("stairs")
@@ -1066,6 +1075,7 @@ class CCTVMonitoringSystem(IRiskObserver):
         if "olla" in low or "sartén" in low: inc("pot")
         if "zona" in low: inc("zone")
         if "sobre" in low: inc("high")
+        if "tijeras" in low: inc("scissors")  # ← NUEVO: métrica tijeras
 
     def _beep(self):
         if not Config.SOUND: return

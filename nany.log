@@ -100,3 +100,29 @@
 2025-09-27 18:39:06,464 INFO Modelo YOLO cargado: NiñeraV.pt
 2025-09-27 19:02:18,150 INFO Modelo custom cargado: NiñeraV.pt
 2025-09-27 19:02:20,525 INFO Modelo COCO cargado: yolov8s.pt
+2025-09-27 22:54:22,939 WARNING pyttsx3 no disponible. Voz deshabilitada.
+2025-09-27 22:58:53,785 INFO Could not import comtypes.gen, trying to create it.
+2025-09-27 22:58:53,785 INFO Created comtypes.gen directory: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2025-09-27 22:58:53,786 INFO Writing __init__.py file: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen\__init__.py'
+2025-09-27 22:58:53,799 INFO Using writeable comtypes cache directory: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2025-09-27 22:58:53,819 INFO Could not import comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4: No module named 'comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4'
+2025-09-27 22:58:53,822 INFO # Generating comtypes.gen._C866CA3A_32F7_11D2_9602_00C04F8EE628_0_5_4
+2025-09-27 22:58:53,887 INFO # Generating comtypes.gen.SpeechLib
+2025-09-27 22:58:53,892 INFO Could not import comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0: No module named 'comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0'
+2025-09-27 22:58:53,893 INFO # Generating comtypes.gen._00020430_0000_0000_C000_000000000046_0_2_0
+2025-09-27 22:58:53,898 INFO # Generating comtypes.gen.stdole
+2025-09-27 23:11:13,655 INFO Imported existing <module 'comtypes.gen' from 'C:\\Users\\samuel\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2025-09-27 23:11:13,655 INFO Using writeable comtypes cache directory: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2025-09-27 23:13:12,798 INFO Imported existing <module 'comtypes.gen' from 'C:\\Users\\samuel\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2025-09-27 23:13:12,798 INFO Using writeable comtypes cache directory: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2025-09-29 07:12:31,084 INFO Imported existing <module 'comtypes.gen' from 'C:\\Users\\samuel\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2025-09-29 07:12:31,085 INFO Using writeable comtypes cache directory: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2025-09-29 07:13:15,805 ERROR Telegram photo: HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7657028357:AAHV3c1mpfHrFFUK_HciH6NNQ30pxtC6dfQ/sendPhoto (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000016753FF1A90>: Failed to resolve 'api.telegram.org' ([Errno 11001] getaddrinfo failed)"))
+2025-09-29 07:13:19,645 ERROR Telegram photo: HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7657028357:AAHV3c1mpfHrFFUK_HciH6NNQ30pxtC6dfQ/sendPhoto (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000016753C9BD90>: Failed to resolve 'api.telegram.org' ([Errno 11001] getaddrinfo failed)"))
+2025-09-29 07:13:22,355 ERROR Telegram photo: HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7657028357:AAHV3c1mpfHrFFUK_HciH6NNQ30pxtC6dfQ/sendPhoto (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000167540487D0>: Failed to resolve 'api.telegram.org' ([Errno 11001] getaddrinfo failed)"))
+2025-09-29 07:13:29,343 ERROR Telegram photo: HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7657028357:AAHV3c1mpfHrFFUK_HciH6NNQ30pxtC6dfQ/sendPhoto (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000016754048A50>: Failed to resolve 'api.telegram.org' ([Errno 11001] getaddrinfo failed)"))
+2025-09-29 07:13:30,029 ERROR Telegram photo: HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot7657028357:AAHV3c1mpfHrFFUK_HciH6NNQ30pxtC6dfQ/sendPhoto (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000016753C99950>: Failed to resolve 'api.telegram.org' ([Errno 11001] getaddrinfo failed)"))
+2025-09-29 07:18:09,447 INFO Imported existing <module 'comtypes.gen' from 'C:\\Users\\samuel\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2025-09-29 07:18:09,448 INFO Using writeable comtypes cache directory: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2025-09-29 08:20:13,442 INFO Imported existing <module 'comtypes.gen' from 'C:\\Users\\samuel\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2025-09-29 08:20:13,443 INFO Using writeable comtypes cache directory: 'C:\Users\samuel\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
