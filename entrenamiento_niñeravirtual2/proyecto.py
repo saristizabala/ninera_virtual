@@ -384,6 +384,17 @@ class RiskAnalysisFacade:
             if ((y1>y)!=(y2>y)) and (x<(x2-x1)*(y-y1)/(y2-y1+1e-9)+x1): inside=not inside
         return inside
     @staticmethod
+    def _polygon_probe_points(box):
+        x1,y1,x2,y2=box
+        cx=int((x1+x2)/2); cy=int((y1+y2)/2)
+        return [
+            (cx, cy),
+            (x1, y1),
+            (x2, y1),
+            (x2, y2),
+            (x1, y2),
+        ]
+    @staticmethod
     def _child_on_high_surface(c, s, label):
         c_x1,c_y1,c_x2,c_y2=c; s_x1,s_y1,s_x2,s_y2=s
         cw,ch=c_x2-c_x1,c_y2-c_y1; sw,sh=s_x2-s_x1,s_y2-s_y1
@@ -457,10 +468,11 @@ class RiskAnalysisFacade:
             zones=self.polygons_per_cam.get(camera_id,{})
             if zones:
                 for ch in children:
-                    cx,cy=self._center(ch.box); ck=self._child_key(ch.box)
+                    ck=self._child_key(ch.box)
+                    probes=self._polygon_probe_points(ch.box)
                     for name,polys in zones.items():
                         for poly in polys:
-                            if self._point_in_polygon(cx,cy,poly):
+                            if any(self._point_in_polygon(px,py,poly) for px,py in probes):
                                 k=f"CHILD_IN_ZONE_{name}"
                                 if self._can(camera_id,k,ck):
                                     msgs.append(f"NIÑO EN ZONA: {name.upper()}!")
@@ -1113,11 +1125,15 @@ class CCTVMonitoringSystem(IRiskObserver):
                             format='%(asctime)s %(levelname)s %(message)s')
 
         self.root=root
-        self.root.title(f"{APP_NAME} — {APP_VERSION}")
+        self.root.title(f"{APP_NAME} - {APP_VERSION}")
         self.root.minsize(1080,680)
         self.theme="dark"; self.colors=self.DARK
         self.session_user = session_user
         self.on_logout_cb = on_logout
+        self.is_fullscreen=False
+        self._set_fullscreen(True)
+        self.root.bind("<F11>", self._toggle_fullscreen)
+        self.root.bind("<Escape>", self._exit_fullscreen)
 
         # Estados
         self.running=True
@@ -1524,57 +1540,289 @@ class CCTVMonitoringSystem(IRiskObserver):
 
     # ==================== ZONAS ====================
     def define_zones_for_current(self):
-        if not self.current_camera_id or self.current_camera_id not in self.frame_queues:
-            messagebox.showinfo("Zonas","Selecciona una cámara activa."); return
-        try:
-            frame=self.frame_queues[self.current_camera_id].get_nowait()
-        except Empty:
-            messagebox.showinfo("Zonas","No hay frame ahora. Intenta de nuevo."); return
+        if not self.current_camera_id or self.current_camera_id not in self.cameras:
+            messagebox.showinfo("Zonas","Selecciona una camara activa.")
+            return
 
-        clone=frame.copy(); draw=frame.copy()
-        win=f"Definir Zonas - {self.cameras[self.current_camera_id]['source_name']}"
-        cv2.namedWindow(win, cv2.WINDOW_NORMAL); cv2.resizeWindow(win, 1000, 700)
+        frame = None
+        frame_queue = self.frame_queues.get(self.current_camera_id)
+        if frame_queue is not None:
+            try:
+                frame = frame_queue.get_nowait()
+            except Empty:
+                frame = None
+        if frame is None:
+            display_queue = self.display_queues.get(self.current_camera_id)
+            if display_queue is not None:
+                try:
+                    frame = display_queue.get_nowait()
+                except Empty:
+                    frame = None
+        if frame is None:
+            messagebox.showinfo("Zonas","No hay imagen disponible en este momento. Intenta de nuevo.")
+            return
 
-        current_pts=[]; polygons=[]
+        height, width = frame.shape[:2]
+        max_w, max_h = 1280, 720
+        scale = min(max_w / float(width), max_h / float(height), 1.0)
+        if scale < 1.0:
+            new_w = max(1, int(round(width * scale)))
+            new_h = max(1, int(round(height * scale)))
+            display = cv2.resize(frame, (new_w, new_h))
+        else:
+            display = frame.copy()
+            scale = 1.0
+        disp_h, disp_w = display.shape[:2]
 
-        def cb(event,x,y,flags,param):
-            nonlocal draw,current_pts
-            if event==cv2.EVENT_LBUTTONDOWN:
-                current_pts.append((x,y))
-                cv2.circle(draw,(x,y),3,(0,255,0),-1)
-                if len(current_pts)>1:
-                    cv2.line(draw,current_pts[-2], current_pts[-1], (0,255,0),2)
-        cv2.setMouseCallback(win, cb)
+        image_rgb = cv2.cvtColor(display, cv2.COLOR_BGR2RGB)
+        image_pil = Image.fromarray(image_rgb)
+        photo = ImageTk.PhotoImage(image=image_pil)
 
-        info=["Instrucciones:","• Clicks para puntos del polígono.","• 'c' cierra polígono y pide etiqueta.",
-              "• 'r' reinicia puntos.","• 'q' finaliza y guarda."]
-        while True:
-            disp=draw.copy(); y0=24
-            for t in info:
-                cv2.putText(disp,t,(12,y0),cv2.FONT_HERSHEY_SIMPLEX,0.7,(60,220,60),2); y0+=26
-            cv2.imshow(win, disp)
-            k=cv2.waitKey(30)&0xFF
-            if k==ord('q'): break
-            elif k==ord('r'): draw=clone.copy(); current_pts=[]
-            elif k==ord('c'):
-                if len(current_pts)>=3:
-                    label=simpledialog.askstring("Etiqueta de zona","Nombre (ej: cocina, escaleras, balcon):", parent=self.root)
-                    if label:
-                        polygons.append((label.lower(), current_pts.copy()))
-                        cv2.polylines(draw,[np.array(current_pts,dtype=np.int32)],True,(0,255,255),2)
-                        current_pts=[]
-                else:
-                    messagebox.showinfo("Zonas","Mínimo 3 puntos.")
-        cv2.destroyWindow(win)
+        cam_name = self.cameras[self.current_camera_id]['source_name']
+        win = tk.Toplevel(self.root)
+        win.title(f"Definir zonas - {cam_name}")
+        win.configure(background=self.colors.get('bg', '#0f172a'))
+        win.transient(self.root)
+        win.resizable(False, False)
+        win.grab_set()
+        win.columnconfigure(0, weight=1)
+        win.rowconfigure(0, weight=1)
 
-        if polygons:
-            cam_polys=self.per_camera_polygons.get(self.current_camera_id,{})
-            for label,pts in polygons:
-                cam_polys.setdefault(label,[]).append(pts)
-            self.per_camera_polygons[self.current_camera_id]=cam_polys
-            # actualizar en Facade (para que la capa de procesamiento las use)
+        container = ttk.Frame(win, style='Panel.TFrame', padding=(20, 16))
+        container.grid(row=0, column=0, sticky='nsew')
+        container.columnconfigure(0, weight=1)
+        container.columnconfigure(1, weight=0)
+        container.rowconfigure(0, weight=1)
+
+        canvas_frame = ttk.Frame(container, style='Card.TFrame', padding=12)
+        canvas_frame.grid(row=0, column=0, sticky='nsew')
+        canvas_frame.columnconfigure(0, weight=1)
+        canvas_frame.rowconfigure(0, weight=1)
+        canvas = tk.Canvas(canvas_frame, width=disp_w, height=disp_h, highlightthickness=0, bg='#000000')
+        canvas.grid(row=0, column=0, sticky='nsew')
+        canvas.create_image(0, 0, image=photo, anchor='nw')
+        canvas.image = photo
+
+        existing = self.per_camera_polygons.get(self.current_camera_id, {})
+        existing_count = sum(len(polys) for polys in existing.values())
+
+        controls = ttk.Frame(container, style='Card.TFrame', padding=(16, 12))
+        controls.grid(row=0, column=1, sticky='ns', padx=(16, 0))
+        controls.columnconfigure(0, weight=1)
+        controls.rowconfigure(7, weight=1)
+
+        ttk.Label(controls, text='Definir zonas', style='Title.TLabel').grid(row=0, column=0, sticky='w')
+        counter_var = tk.StringVar(value=f'Zonas registradas: {existing_count}')
+        ttk.Label(controls, textvariable=counter_var, style='Muted.TLabel').grid(row=1, column=0, sticky='w', pady=(0, 12))
+
+        instructions = (
+            '- Haz clic sobre la imagen para trazar los puntos.',
+            '- Deshacer punto elimina el ultimo trazo.',
+            '- Guardar zona cierra el poligono y lo agrega a la lista.',
+            '- Solo las zonas nuevas se pueden eliminar aqui antes de aplicar.'
+        )
+        ttk.Label(controls, text='\n'.join(instructions), style='Muted.TLabel', justify='left', wraplength=260).grid(row=2, column=0, sticky='w')
+
+        ttk.Label(controls, text='Nombre de la zona', style='TLabel').grid(row=3, column=0, sticky='w', pady=(12, 0))
+        zone_name_var = tk.StringVar()
+        name_entry = ttk.Entry(controls, textvariable=zone_name_var)
+        name_entry.grid(row=4, column=0, sticky='ew', pady=(2, 0))
+
+        status_var = tk.StringVar(value='Puntos actuales: 0')
+        ttk.Label(controls, textvariable=status_var, style='Muted.TLabel').grid(row=5, column=0, sticky='w', pady=(6, 6))
+
+        actions = ttk.Frame(controls, style='Card.TFrame')
+        actions.grid(row=6, column=0, sticky='ew')
+        save_btn = ttk.Button(actions, text='Guardar zona')
+        save_btn.pack(fill=tk.X, pady=(0, 6))
+        undo_btn = ttk.Button(actions, text='Deshacer punto', style='Ghost.TButton')
+        undo_btn.pack(fill=tk.X)
+        reset_btn = ttk.Button(actions, text='Reiniciar poligono', style='Ghost.TButton')
+        reset_btn.pack(fill=tk.X, pady=(6, 0))
+
+        tree_frame = ttk.Frame(controls, style='Card.TFrame')
+        tree_frame.grid(row=7, column=0, sticky='nsew', pady=(12, 6))
+        tree_frame.columnconfigure(0, weight=1)
+        tree_frame.rowconfigure(0, weight=1)
+        tree = ttk.Treeview(tree_frame, columns=('zona', 'estado', 'puntos'), show='headings', selectmode='browse', height=7)
+        tree.heading('zona', text='Zona')
+        tree.heading('estado', text='Estado')
+        tree.heading('puntos', text='Puntos')
+        tree.column('zona', width=120, anchor='w')
+        tree.column('estado', width=80, anchor='center')
+        tree.column('puntos', width=70, anchor='center')
+        tree.grid(row=0, column=0, sticky='nsew')
+        vsb = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
+        vsb.grid(row=0, column=1, sticky='ns')
+        tree.configure(yscrollcommand=vsb.set)
+        tree.tag_configure('existing', foreground=self.colors.get('muted', '#9ca3af'))
+        tree.tag_configure('new', foreground=self.colors.get('accent', '#22c55e'))
+
+        ttk.Label(controls, text='Zonas nuevas agregadas aqui se guardaran al aplicar cambios.', style='Muted.TLabel', wraplength=260).grid(row=8, column=0, sticky='w')
+        remove_btn = ttk.Button(controls, text='Eliminar seleccionada', style='Ghost.TButton')
+        remove_btn.grid(row=9, column=0, sticky='ew', pady=(4, 0))
+
+        footer = ttk.Frame(controls, style='Card.TFrame')
+        footer.grid(row=10, column=0, sticky='ew', pady=(16, 0))
+        apply_btn = ttk.Button(footer, text='Aplicar zonas')
+        apply_btn.pack(side=tk.RIGHT, fill=tk.X)
+        cancel_btn = ttk.Button(footer, text='Cancelar', style='Ghost.TButton')
+        cancel_btn.pack(side=tk.RIGHT, padx=8)
+
+        name_entry.focus_set()
+
+        current_points = []
+        point_handles = []
+        line_handles = []
+        new_polygons = []
+        polygon_shapes = {}
+        item_to_polygon = {}
+
+        palette = self.colors
+        accent_color = palette.get('accent', '#22c55e')
+        muted_color = palette.get('muted', '#9ca3af')
+
+        def to_display(pt):
+            x, y = pt
+            return int(round(x * scale)), int(round(y * scale))
+
+        for label, polys in existing.items():
+            for poly in polys:
+                if not poly:
+                    continue
+                coords = []
+                for px, py in poly:
+                    dx, dy = to_display((px, py))
+                    coords.extend((dx, dy))
+                if coords:
+                    canvas.create_polygon(coords, outline=muted_color, width=2, fill='')
+                    tree.insert('', tk.END, values=(label, 'Actual', len(poly)), tags=('existing',))
+
+        def update_status(extra=None):
+            text = f'Puntos actuales: {len(current_points)}'
+            if extra:
+                text = f"{text} | {extra}"
+            status_var.set(text)
+
+        def update_counter():
+            base = sum(len(polys) for polys in existing.values())
+            counter_var.set(f'Zonas registradas: {base + len(new_polygons)}')
+
+        def on_canvas_click(event):
+            x = max(0, min(disp_w - 1, int(event.x)))
+            y = max(0, min(disp_h - 1, int(event.y)))
+            point_handles.append(canvas.create_oval(x - 4, y - 4, x + 4, y + 4, fill=accent_color, outline=''))
+            if current_points:
+                lx, ly = current_points[-1]
+                line_handles.append(canvas.create_line(lx, ly, x, y, fill=accent_color, width=2))
+            current_points.append((x, y))
+            update_status()
+
+        def undo_point():
+            if not current_points:
+                return
+            canvas.delete(point_handles.pop())
+            if line_handles:
+                canvas.delete(line_handles.pop())
+            current_points.pop()
+            update_status()
+
+        def reset_polygon():
+            while point_handles:
+                canvas.delete(point_handles.pop())
+            while line_handles:
+                canvas.delete(line_handles.pop())
+            current_points.clear()
+            update_status('Poligono reiniciado.')
+
+        def save_zone():
+            name = (zone_name_var.get() or '').strip().lower()
+            if not name:
+                messagebox.showinfo('Zonas', 'Ingresa un nombre para la zona.')
+                return
+            if len(current_points) < 3:
+                messagebox.showinfo('Zonas', 'Necesitas al menos 3 puntos para crear el poligono.')
+                return
+            original = []
+            coords = []
+            for x, y in current_points:
+                ox = min(width - 1, max(0, int(round(x / scale))))
+                oy = min(height - 1, max(0, int(round(y / scale))))
+                original.append((ox, oy))
+                coords.extend((x, y))
+            poly_id = f"new_{int(time.time() * 1000)}_{len(new_polygons)}"
+            new_polygons.append({'id': poly_id, 'name': name, 'points': original})
+            polygon_shapes[poly_id] = canvas.create_polygon(coords, outline=accent_color, width=2, fill='')
+            item_id = tree.insert('', tk.END, values=(name, 'Nuevo', len(original)), tags=('new',))
+            item_to_polygon[item_id] = poly_id
+            zone_name_var.set('')
+            reset_polygon()
+            update_counter()
+            update_status('Zona registrada, aplica cambios para guardar.')
+
+        def remove_selected():
+            sel = tree.selection()
+            if not sel:
+                messagebox.showinfo('Zonas', 'Selecciona una zona nueva para eliminar.')
+                return
+            item = sel[0]
+            poly_id = item_to_polygon.get(item)
+            if not poly_id:
+                messagebox.showinfo('Zonas', 'Solo se pueden eliminar las zonas nuevas creadas en esta ventana.')
+                return
+            tree.delete(item)
+            item_to_polygon.pop(item, None)
+            for idx, data in enumerate(list(new_polygons)):
+                if data['id'] == poly_id:
+                    new_polygons.pop(idx)
+                    break
+            handle = polygon_shapes.pop(poly_id, None)
+            if handle is not None:
+                canvas.delete(handle)
+            update_counter()
+            update_status('Zona eliminada.')
+
+        def apply_zones():
+            if not new_polygons:
+                messagebox.showinfo('Zonas', 'No hay zonas nuevas para guardar.')
+                return
+            cam_polys = self.per_camera_polygons.get(self.current_camera_id, {}).copy()
+            for data in new_polygons:
+                cam_polys.setdefault(data['name'], []).append(data['points'])
+            self.per_camera_polygons[self.current_camera_id] = cam_polys
             self.facade.set_polygons(self.current_camera_id, cam_polys)
-            messagebox.showinfo("Zonas", f"Se registraron {len(polygons)} polígonos.")
+            self._set_status(f"{len(new_polygons)} zona(s) nuevas registradas en {cam_name}.", 'info')
+            messagebox.showinfo('Zonas', f"Se guardaron {len(new_polygons)} zona(s).")
+            try:
+                win.grab_release()
+            except Exception:
+                pass
+            win.destroy()
+
+        def cancel():
+            if new_polygons:
+                if not messagebox.askyesno('Zonas', 'Descartar las zonas nuevas sin guardar?'):
+                    return
+            try:
+                win.grab_release()
+            except Exception:
+                pass
+            win.destroy()
+
+        save_btn.configure(command=save_zone)
+        undo_btn.configure(command=undo_point)
+        reset_btn.configure(command=reset_polygon)
+        remove_btn.configure(command=remove_selected)
+        apply_btn.configure(command=apply_zones)
+        cancel_btn.configure(command=cancel)
+
+        canvas.bind('<Button-1>', on_canvas_click)
+        win.bind('<Return>', lambda _: save_zone())
+        win.bind('<Escape>', lambda _: cancel())
+        win.protocol('WM_DELETE_WINDOW', cancel)
+        win.lift()
+        update_status()
+        update_counter()
 
     def load_zones_json(self):
         path=filedialog.askopenfilename(title="Cargar Zonas (JSON)", filetypes=[("JSON","*.json")])
@@ -1679,6 +1927,29 @@ class CCTVMonitoringSystem(IRiskObserver):
         self.root.after(Config.UPDATE_MS, self._update_gui_frame)
 
     # ==================== UTILIDADES UI ====================
+    def _set_fullscreen(self, enabled: bool):
+        try:
+            self.root.attributes("-fullscreen", enabled)
+        except tk.TclError:
+            if enabled:
+                try:
+                    self.root.state('zoomed')
+                except tk.TclError:
+                    pass
+            else:
+                try:
+                    self.root.state('normal')
+                except tk.TclError:
+                    pass
+        self.is_fullscreen=enabled
+
+    def _toggle_fullscreen(self, _event=None):
+        self._set_fullscreen(not self.is_fullscreen)
+
+    def _exit_fullscreen(self, _event=None):
+        if self.is_fullscreen:
+            self._set_fullscreen(False)
+
     def toggle_theme(self):
         self.theme="light" if self.theme=="dark" else "dark"
         self.colors=self.LIGHT if self.theme=="light" else self.DARK
@@ -1754,7 +2025,15 @@ class CCTVMonitoringSystem(IRiskObserver):
         except Exception:
             pass
 
-    def _set_status(self, text): self.status_label.config(text=text)
+    def _set_status(self, text, tone='info'):
+        palette=self.colors
+        color_map={
+            'info': palette.get('muted', '#9ca3af'),
+            'success': palette.get('accent', '#22c55e'),
+            'warning': palette.get('warning', '#f59e0b'),
+            'danger': palette.get('danger', '#dc2626')
+        }
+        self.status_label.config(text=text, foreground=color_map.get(tone, palette.get('muted', '#9ca3af')))
 
     def _logout(self):
         if messagebox.askyesno("Cuenta", "¿Cerrar sesión y volver a la pantalla de inicio?"):
