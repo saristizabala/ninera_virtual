@@ -53,6 +53,7 @@ try:
     import torch
     from torch.serialization import add_safe_globals
     from ultralytics.nn.tasks import DetectionModel
+    safe_globals([DetectionModel, torch.nn.Sequential])
 
     try:
         add_safe_globals([DetectionModel])
