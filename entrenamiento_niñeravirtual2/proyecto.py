@@ -28,10 +28,22 @@ from datetime import datetime, timedelta
 from threading import Thread, Semaphore
 from queue import Queue, Empty, Full
 
-# GUI
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, simpledialog
-from PIL import Image, ImageTk
+# GUI (opcional en servidores headless)
+try:
+    import tkinter as tk
+    from tkinter import ttk, filedialog, messagebox, simpledialog
+except Exception:
+    tk = None
+    ttk = None
+    filedialog = None
+    messagebox = None
+    simpledialog = None
+
+try:
+    from PIL import Image, ImageTk
+except Exception:
+    Image = None
+    ImageTk = None
 
 # Modelo
 from ultralytics import YOLO
@@ -46,6 +58,11 @@ try:
 except Exception:
     pass
 
+
+def _env_flag(name: str, default: str = "0") -> bool:
+    value = os.getenv(name, default)
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
 # Parche Windows (ultralytics rutas)
 if sys.platform == "win32":
     pathlib.PosixPath = pathlib.WindowsPath
@@ -58,9 +75,13 @@ APP_VERSION = "4.0 + Auth (Login/Registro) + Patrones"
 # ==========================
 class Config:
     # Modelos
-    YOLO_MODEL_PATH = 'NiñeraV.pt'     # tu modelo personalizado
-    COCO_MODEL_PATH = 'yolov8s.pt'     # Ultralytics lo descarga si no está
-    USE_COCO_MODEL  = True
+    MODEL_DIR = os.path.abspath(os.getenv('MODEL_DIR', '.'))
+    YOLO_MODEL_FILE = os.getenv('YOLO_MODEL_FILE', 'NiñeraV.pt')
+    YOLO_MODEL_PATH = os.getenv('YOLO_MODEL_PATH') or os.path.join(MODEL_DIR, YOLO_MODEL_FILE)
+    COCO_MODEL_FILE = os.getenv('COCO_MODEL_FILE', 'yolov8s.pt')
+    COCO_MODEL_PATH = os.getenv('COCO_MODEL_PATH') or os.path.join(MODEL_DIR, COCO_MODEL_FILE)
+    USE_COCO_MODEL  = _env_flag('USE_COCO_MODEL', '1')
+
 
     # Map COCO -> etiquetas del sistema
     COCO_CLASS_MAP = {
@@ -94,7 +115,8 @@ class Config:
     }
     HIGH_SURFACE_LABELS = [
         'chair', 'silla', 'bar', 'barra', 'table', 'mesa',
-        'stool', 'taburete', 'counter', 'mostrador', 'shelf', 'estante'
+        'stool', 'taburete', 'counter', 'mostrador', 'shelf', 'estante',
+        'handrail', 'baranda'
     ]
 
     # Alertas / Cooldowns
@@ -106,7 +128,7 @@ class Config:
     # Telegram
     TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "7657028357:AAHV3c1mpfHrFFUK_HciH6NNQ30pxtC6dfQ")
     TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "1626038555")
-    SEND_TELEGRAM      = bool(int(os.getenv("SEND_TELEGRAM_ALERTS", "1")))
+    SEND_TELEGRAM      = _env_flag('SEND_TELEGRAM_ALERTS', '1')
     TELEGRAM_IMG_MAX_W = 640
     TELEGRAM_JPEG_QLTY = 80
     TELEGRAM_CONC      = 2
@@ -374,8 +396,12 @@ class RiskAnalysisFacade:
         cx,cy=RiskAnalysisFacade._center(box); return (int(cx//grid), int(cy//grid))
     @staticmethod
     def _proximity(b1,b2,thr):
-        x1,y1=RiskAnalysisFacade._center(b1); x2,y2=RiskAnalysisFacade._center(b2)
-        return np.hypot(x1-x2,y1-y2)<thr
+        x1a,y1a,x2a,y2a=b1; x1b,y1b,x2b,y2b=b2
+        dx=max(x1a-x2b, x1b-x2a, 0)
+        dy=max(y1a-y2b, y1b-y2a, 0)
+        if dx==0 and dy==0:
+            return True
+        return float(np.hypot(dx,dy))<thr
     @staticmethod
     def _point_in_polygon(x,y,poly):
         inside=False; n=len(poly)
@@ -399,18 +425,33 @@ class RiskAnalysisFacade:
         c_x1,c_y1,c_x2,c_y2=c; s_x1,s_y1,s_x2,s_y2=s
         cw,ch=c_x2-c_x1,c_y2-c_y1; sw,sh=s_x2-s_x1,s_y2-s_y1
         if cw<=0 or ch<=0 or sw<=0 or sh<=0: return False
-        cx=(c_x1+c_x2)/2; feet=c_y2
-        ox=min(c_x2,s_x2)-max(c_x1,s_x1)
-        if not (ox>cw*0.35 or (s_x1<cx<s_x2)): return False
-        eff=max(sh,10)
-        if label in ['bar','barra','table','mesa','counter','mostrador','shelf','estante']:
-            tol=ch*0.12; cmin=s_y1-tol; cmax=s_y1+eff*0.30
-            head_ok=(c_y1 < s_y1+eff*0.10)
-            return (cmin<feet<cmax) and head_ok
-        if label in ['chair','silla','stool','taburete']:
-            top=s_y1+sh*0.15; bottom=s_y1+sh*0.75
-            return (top<feet<bottom) and (c_y1<bottom)
-        return False
+        cx=(c_x1+c_x2)/2; feet=c_y2; head=c_y1
+        overlap_x=max(0, min(c_x2,s_x2)-max(c_x1,s_x1))
+        min_width=max(min(cw,sw),1)
+        center_inside=s_x1<=cx<=s_x2
+        if overlap_x/min_width<0.35 and not center_inside: return False
+        surface_top=min(s_y1,s_y2); surface_bottom=max(s_y1,s_y2)
+        sh=surface_bottom-surface_top
+        slender={'bar','barra','handrail','baranda','shelf','estante'}
+        seating={'chair','silla','stool','taburete'}
+        broad={'table','mesa','counter','mostrador'}
+        if label in seating:
+            top=surface_top+sh*0.15
+            bottom=surface_top+sh*0.75
+            return (top<feet<bottom) and (head<bottom)
+        contact_band=max(0.18*ch, 0.35*sh, 18)
+        upper_tol=max(0.20*ch, 0.25*sh, 12)
+        if label in slender:
+            contact_band=max(0.25*ch, 0.55*sh, 22)
+            upper_tol=max(0.35*ch, 0.50*sh, 18)
+        elif label in broad:
+            contact_band=max(0.22*ch, 0.45*sh, 20)
+            upper_tol=max(0.25*ch, 0.35*sh, 15)
+        feet_delta=feet-surface_top
+        if feet_delta<-upper_tol or feet_delta>contact_band: return False
+        head_delta=head-surface_top
+        if head_delta>upper_tol: return False
+        return True
 
     def _can(self, cam, typ, ck=None):
         last=self.cooldowns.get((cam,typ,ck))
@@ -419,9 +460,14 @@ class RiskAnalysisFacade:
         elif typ=="CHILD_ON_HIGH_SURFACE": cd=Config.CD_HEIGHT
         return (last is None) or (datetime.now()>=last+timedelta(seconds=cd))
     def _mark(self, cam, typ, ck=None): self.cooldowns[(cam,typ,ck)]=datetime.now()
+    def unsubscribe(self, obs: IRiskObserver):
+        try:
+            self.observers.remove(obs)
+        except ValueError:
+            pass
 
     # --- API principal ---
-    def detect_and_evaluate(self, frame_bgr, camera_id, camera_name):
+    def detect_and_evaluate(self, frame_bgr, camera_id, camera_name, *, return_alerts=False):
         # 1) detectar
         dets=self.detector.detect(frame_bgr)
 
@@ -455,7 +501,7 @@ class RiskAnalysisFacade:
                                 msgs.append(m); self._mark(camera_id,key,ck)
                             break
             # altura
-            high=[o for o in filtered if o.label in Config.HIGH_SURFACE_LABELS]
+            high=[o for o in filtered if o.label in self.high_surfaces]
             for ch in children:
                 if (ch.box[2]-ch.box[0])*(ch.box[3]-ch.box[1]) < 40*40: continue
                 for s in high:
@@ -486,6 +532,8 @@ class RiskAnalysisFacade:
                 try: obs.on_alert(ev)
                 except Exception as e: logging.error(f"Observer error: {e}")
 
+        if return_alerts:
+            return filtered, list(msgs)
         return filtered  # para dibujar en UI
 
 
@@ -2067,6 +2115,9 @@ if __name__ == "__main__":
     DatabaseConnection.get_instance()
 
     # Arranca la UI de autenticación; tras login abre la app principal
-    root = tk.Tk()
-    AuthWindow(root)
-    root.mainloop()
+    if tk is None:
+        print("El entorno actual no soporta interfaz grafica (tkinter). Ejecuta la aplicacion GUI en un equipo con soporte de escritorio.")
+    else:
+        root = tk.Tk()
+        AuthWindow(root)
+        root.mainloop()
