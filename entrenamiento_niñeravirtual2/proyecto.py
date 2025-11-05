@@ -48,6 +48,19 @@ except Exception:
 # Modelo
 from ultralytics import YOLO
 
+# Torch safe globals (PyTorch >=2.6 weights_only=True)
+try:
+    import torch
+    from torch.serialization import add_safe_globals
+    from ultralytics.nn.tasks import DetectionModel
+
+    try:
+        add_safe_globals([DetectionModel])
+    except Exception:
+        pass
+except Exception:
+    torch = None
+
 # Envío de alertas
 import requests
 
