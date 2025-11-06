@@ -52,11 +52,11 @@ from ultralytics import YOLO
 try:
     import torch
     from torch.serialization import add_safe_globals
+    from torch.nn import Sequential as TorchSequential
     from ultralytics.nn.tasks import DetectionModel
-    safe_globals([DetectionModel, torch.nn.Sequential])
 
     try:
-        add_safe_globals([DetectionModel])
+        add_safe_globals([DetectionModel, TorchSequential])
     except Exception:
         pass
 except Exception:
