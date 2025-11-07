@@ -51,16 +51,36 @@ from ultralytics import YOLO
 # Torch safe globals (PyTorch >=2.6 weights_only=True)
 try:
     import torch
-    from torch.serialization import add_safe_globals
-    from torch.nn import Sequential as TorchSequential
-    from ultralytics.nn.tasks import DetectionModel
-
-    try:
-        add_safe_globals([DetectionModel, TorchSequential])
-    except Exception:
-        pass
 except Exception:
     torch = None
+
+try:
+    from torch.serialization import add_safe_globals
+except Exception:
+    add_safe_globals = None
+
+try:
+    from torch.nn import Sequential as TorchSequential
+except Exception:
+    TorchSequential = None
+
+try:
+    from ultralytics.nn.tasks import DetectionModel
+except Exception:
+    DetectionModel = None
+
+try:
+    from ultralytics.nn.modules.conv import Conv as UltralyticsConv
+except Exception:
+    UltralyticsConv = None
+
+if add_safe_globals:
+    _SAFE_CLASSES = [cls for cls in (DetectionModel, TorchSequential, UltralyticsConv) if cls is not None]
+    if _SAFE_CLASSES:
+        try:
+            add_safe_globals(_SAFE_CLASSES)
+        except Exception:
+            pass
 
 # Envío de alertas
 import requests
