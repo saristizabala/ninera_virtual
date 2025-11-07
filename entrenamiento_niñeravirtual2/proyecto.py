@@ -65,6 +65,11 @@ except Exception:
     TorchSequential = None
 
 try:
+    from torch.nn import Conv2d as TorchConv2d
+except Exception:
+    TorchConv2d = None
+
+try:
     from ultralytics.nn.tasks import DetectionModel
 except Exception:
     DetectionModel = None
@@ -75,7 +80,7 @@ except Exception:
     UltralyticsConv = None
 
 if add_safe_globals:
-    _SAFE_CLASSES = [cls for cls in (DetectionModel, TorchSequential, UltralyticsConv) if cls is not None]
+    _SAFE_CLASSES = [cls for cls in (DetectionModel, TorchSequential, TorchConv2d, UltralyticsConv) if cls is not None]
     if _SAFE_CLASSES:
         try:
             add_safe_globals(_SAFE_CLASSES)
